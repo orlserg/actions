@@ -1,0 +1,13 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print the head_ref
+        run: echo "The source branch is ${{ github.head_ref }}"
