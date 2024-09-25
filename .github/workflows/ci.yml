@@ -5,12 +5,9 @@ on:
     branches:
       - main
 
-concurrency:
-  group: ${{ github.head_ref }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Print the head_ref
-        run: echo "The source branch is d"
+        run: echo ${{ github.workspace }}
