@@ -5,10 +5,16 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest      
     steps:
       - name: zxzxzxz
         run: echo "${{ secrets.TELEGRAM_CHAT_ID }} - ${{ secrets.TELEGRAM_TOKEN }}"
+
+      - name: eeeeeeeeee
+        env:
+          SUPER_SECRET: ${{ secrets.SuperSecret }}
+        run: |
+          echo "examp${{ secrets.SuperSecret }}le-command $env:SUPER_SECRET"
     # steps:
     #   - name: send telegram message on push
     #     uses: appleboy/telegram-action@master
