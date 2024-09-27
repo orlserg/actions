@@ -8,13 +8,14 @@ jobs:
     runs-on: ubuntu-latest      
     steps:
       - name: zxzxzxz
-        run: echo "${{ secrets.TELEGRAM_CHAT_ID }} - ${{ secrets.TELEGRAM_TOKEN }}"
+        run: |
+          echo "${{ secrets.SUPERSECRET }} - ${{ secrets.SUPERSECRET }}"
 
       - name: eeeeeeeeee
         env:
-          SUPER_SECRET: ${{ secrets.SuperSecret }}
+          SUPER_SECRET: ${{ secrets.SUPERSECRET }}
         run: |
-          echo "examp${{ secrets.SuperSecret }}le-command $env:SUPER_SECRET"
+          echo "examp${{ secrets.SUPERSECRET }}le-command $env:$SUPERSECRET"
     # steps:
     #   - name: send telegram message on push
     #     uses: appleboy/telegram-action@master
