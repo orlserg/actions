@@ -1,5 +1,6 @@
 name: telegram message
-on: [pull_request_target]
+on: 
+  pull_request_target
 jobs:
 
   build:
@@ -9,7 +10,7 @@ jobs:
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.TELEGRAM_CHAT }}
+          to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             Commit message: ${{ github.event.commits[0].message }}
