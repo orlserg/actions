@@ -1,26 +1,21 @@
-name: telegram message
-on: 
-  pull_request_target
+name: Notification
+
+on:
+  pull_request_target:
+    types: [opened]
+    branches:
+      - develop
+
 jobs:
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest      
+  pr_opened:
+    name: New PR notification
+    runs-on: ubuntu-latest
     steps:
-      - name: zxzxzxz
-        run: |
-          echo "${{ secrets.SUPERSECRET }} - ${{ secrets.SUPERSECRET }}"
-
-      - name: eeeeeeeeee
-        env:
-          SUPER_SECRET: ${{ secrets.SUPERSECRET }}
-        run: |
-          echo "examp${{ secrets.SUPERSECRET }}le-command $env:$SUPERSECRET"
-    # steps:
-    #   - name: send telegram message on push
-    #     uses: appleboy/telegram-action@master
-    #     with:
-    #       to: ${{ secrets.TELEGRAM_CHAT_ID }}
-    #       token: ${{ secrets.TELEGRAM_TOKEN }}
-    #       message: |
-    #         Commit message
+      - name: Send telegram message
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT }}
+          format: markdown
+          message: |
+            🔍 Пользователь
