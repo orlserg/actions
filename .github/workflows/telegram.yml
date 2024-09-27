@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send telegram message
-        uses: appleboy/telegram-action@master
-        with:
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          to: ${{ secrets.TELEGRAM_CHAT }}
-          format: markdown
-          message: |
-            🔍 Пользователь
+        run: echo "ASAS" 
+        # uses: appleboy/telegram-action@master
+        # with:
+        #   token: ${{ secrets.TELEGRAM_TOKEN }}
+        #   to: ${{ secrets.TELEGRAM_CHAT }}
+        #   format: markdown
+        #   message: |
+        #     🔍 Пользователь
