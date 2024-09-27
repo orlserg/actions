@@ -1,22 +1,14 @@
-name: Notification
+name: Print Secret on PR
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened]
 
 jobs:
-  pr_opened:
-    name: New PR notification
+  print-secret:
     runs-on: ubuntu-latest
-    permissions:
-      read
     steps:
-      - name: Send telegram message
-        run: echo "${{ secrets.TELEGRAM_TOKEN }}"
-        # uses: appleboy/telegram-action@master
-        # with:
-        #   token: ${{ secrets.TELEGRAM_TOKEN }}
-        #   to: ${{ secrets.TELEGRAM_CHAT }}
-        #   format: markdown
-        #   message: |
-        #     🔍 Пользователь
+      # This step prints the secret value. In a real scenario, you shouldn't print secrets in logs.
+      - name: Print TELEGRAM_TOKEN Secret
+        run: echo "The secret token is ${{ secrets.TELEGRAM_TOKEN }}"
+        
