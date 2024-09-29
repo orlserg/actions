@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Run
         run: |-
-          echo "${{ github.event.comment.issue_url }}"
+          echo "$LABEL_TO_REMOVE"
