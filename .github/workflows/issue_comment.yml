@@ -1,15 +1,41 @@
-name: Auto
+name: 'Validation'
+
+env:
+  NODE_VERSION: '18' # Shipped with VS Code.
+  PYTHON_VERSION: 3.11
+
 on:
-  issue_comment:
-    types: [created]
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  auto-remove-awaiting-response-label:
-    name: Run
+  typecheck:
     runs-on: ubuntu-latest
-    env:
-      LABEL_TO_REMOVE: "status:%20awaiting%20response"
+    name: Typecheck
+
     steps:
-      - name: Run
-        run: |-
-          echo "${{ github.event.comment.issue_url }}"
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        shell: bash
+        run: |
+          echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - run: npm run install:all
+
+      - run: npx lerna exec --stream --no-bail -- tsc --noEmit
