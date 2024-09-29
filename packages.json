@@ -1,0 +1,17 @@
+
+{
+  "name": "@replit/crosis",
+  "version": "13.6.0",
+  "description": "Goval connection and channel manager",
+  "files": [
+    "/dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "author": "faris@repl.it",
+  "license": "MIT",
+  "dependencies": {
+    "abortcontroller-polyfill": "1.7.5",
+    "engine.io-client": "3.5.4"
+  },
+}
