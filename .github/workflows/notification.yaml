@@ -51,17 +51,13 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      # - name: Send telegram message
-      #   uses: appleboy/telegram-action@master
-      #   if: ${{ github.event.workflow.name == 'Publish package' && github.event.workflow_run.conclusion == 'success' }}
-      #   with:
-      #     token: ${{ secrets.TELEGRAM_TOKEN }}
-      #     to: ${{ secrets.TELEGRAM_CHAT }}
-      #     format: markdown
-      #     message: |
-      #       📦 Опубликована новая версия: `@wb-tech/ui-react@${{ github.event.workflow_run.head_branch }}`
+      - name: Send telegram message
+        with:
+          format: markdown
+          message: |
+            📦 Опубликована новая версия: `@wb-tech/ui-react@${{ github.event.workflow_run.head_branch }}`
 
-      #       Команды для быстрого копирования в буфер 👆:
-      #       NPM - `npm i @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
-      #       Yarn - `yarn add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
-      #       PNPM - `pnpm add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+            Команды для быстрого копирования в буфер 👆:
+            NPM - `npm i @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+            Yarn - `yarn add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+            PNPM - `pnpm add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
