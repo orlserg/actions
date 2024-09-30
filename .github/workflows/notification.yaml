@@ -5,24 +5,24 @@ on:
     types: [opened]
 
 jobs:
-  # issue_opened:
-  #   name: New issue notification
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Send telegram message
-  #       if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
-  #       uses: appleboy/telegram-action@master
-  #       with:
-  #         token: ${{ secrets.TELEGRAM_TOKEN }}
-  #         to: ${{ secrets.TELEGRAM_CHAT }}
-  #         format: markdown
-  #         message: |
-  #           📝 Пользователь `${{ github.actor }}` создал issue в `${{ github.repository }}`.
+  issue_opened:
+    name: New issue notification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send telegram message
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT }}
+          format: markdown
+          message: |
+            📝 Пользователь `${{ github.actor }}` создал issue в `${{ github.repository }}`.
 
-  #           **Название**: ${{ github.event.issue.title }}
-  #           **Описание**: ${{ github.event.issue.body }}
+            **Название**: ${{ github.event.issue.title }}
+            **Описание**: ${{ github.event.issue.body }}
 
-  #           Ссылка: ${{ github.event.issue.html_url }}
+            Ссылка: ${{ github.event.issue.html_url }}
 
   # pr_opened:
   #   name: New PR notification
@@ -43,21 +43,21 @@ jobs:
 
   #           Ссылка: ${{ github.event.pull_request.html_url }}
 
-  publish:
-    name: New version publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Send telegram message
-        with:
-          format: markdown
-          message: |
-            📦 Опубликована новая версия: `@wb-tech/ui-react@${{ github.event.workflow_run.head_branch }}`
+  # publish:
+  #   name: New version publish
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Dump GitHub context
+  #       env:
+  #         GITHUB_CONTEXT: ${{ toJson(github) }}
+  #       run: echo "$GITHUB_CONTEXT"
+  #     - name: Send telegram message
+  #       with:
+  #         format: markdown
+  #         message: |
+  #           📦 Опубликована новая версия: `@wb-tech/ui-react@${{ github.event.workflow_run.head_branch }}`
 
-            Команды для быстрого копирования в буфер 👆:
-            NPM - `npm i @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
-            Yarn - `yarn add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
-            PNPM - `pnpm add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+  #           Команды для быстрого копирования в буфер 👆:
+  #           NPM - `npm i @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+  #           Yarn - `yarn add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+  #           PNPM - `pnpm add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
