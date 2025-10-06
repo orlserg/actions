@@ -1,63 +1,44 @@
-name: Notification
-
+name: codeowners
 on:
-  issues:
-    types: [opened]
+  push:
+    branches: [main]
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+env:
+  # Make sure to exit early if cache segment download times out after 2 minutes.
+  # We limit cache download as a whole to 5 minutes.
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+
+# Do not cancel this workflow on main. See https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/16616
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  issue_opened:
-    name: New issue notification
-    runs-on: ubuntu-latest
+  check-codeowners:
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+
     steps:
-      - name: Send telegram message
-        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
-        uses: appleboy/telegram-action@master
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5
         with:
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          to: ${{ secrets.TELEGRAM_CHAT }}
-          format: markdown
-          message: |
-            📝 Пользователь `${{ github.actor }}` создал issue в `${{ github.repository }}`.
+          go-version: "1.23.7"
+          cache: false
+          
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          path: pr
 
-            **Название**: ${{ github.event.issue.title }}
-            **Описание**: ${{ github.event.issue.body }}
-
-            Ссылка: ${{ github.event.issue.html_url }}
-
-  # pr_opened:
-  #   name: New PR notification
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Send telegram message
-  #       uses: appleboy/telegram-action@master
-  #       if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}
-  #       with:
-  #         token: ${{ secrets.TELEGRAM_TOKEN }}
-  #         to: ${{ secrets.TELEGRAM_CHAT }}
-  #         format: markdown
-  #         message: |
-  #           🔍 Пользователь `${{ github.actor }}` прислал PR в `${{ github.repository }}`.
-
-  #           **Название**: ${{ github.event.pull_request.title }}
-  #           **Описание**: ${{ github.event.pull_request.body }}
-
-  #           Ссылка: ${{ github.event.pull_request.html_url }}
-
-  # publish:
-  #   name: New version publish
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dump GitHub context
-  #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  #     - name: Send telegram message
-  #       with:
-  #         format: markdown
-  #         message: |
-  #           📦 Опубликована новая версия: `@wb-tech/ui-react@${{ github.event.workflow_run.head_branch }}`
-
-  #           Команды для быстрого копирования в буфер 👆:
-  #           NPM - `npm i @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
-  #           Yarn - `yarn add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
-  #           PNPM - `pnpm add @wb-tech/ui-react@${{ github.event.workflow_run.head_branch }} -S`
+      - name: Gen CODEOWNERS
+        run: |
+          cd pr
+          GITHUB_TOKEN=${{ secrets.READ_ORG_AND_USER_TOKEN }} ../.tools/githubgen codeowners
+          curl 
