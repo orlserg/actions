@@ -46,7 +46,10 @@ jobs:
           node-version: "18"
 
       - name: Build Assets
-        run: npm ci && npm run prod
+        run: |
+          ls -la poetry
+          cat package.json
+          npm ci && npm run prod
 
       - name: Fetch Documentation
         run: |
