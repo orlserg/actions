@@ -1,0 +1,1 @@
+printf "print('RUN_FROM_POETRY: executed')\n"
