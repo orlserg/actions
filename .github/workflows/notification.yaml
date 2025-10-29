@@ -1,44 +1,75 @@
-name: codeowners
-on:
-  push:
-    branches: [main]
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+*"
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-      - edited
-      - reopened
-env:
-  # Make sure to exit early if cache segment download times out after 2 minutes.
-  # We limit cache download as a whole to 5 minutes.
-  SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+name: "Documentation Preview"
 
-# Do not cancel this workflow on main. See https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/16616
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+on:
+  pull_request:
+    # allow repository maintainers to modify and test workflow
+    paths-ignore:
+      - "**"
+      - "!.github/workflows/docs.yml"
+  pull_request_target:
+    # enable runs for this workflow when labeled as documentation only
+    # prevent execution when the workflow itself is modified from a fork
+    types:
+      - labeled
+      - synchronize
+    paths-ignore:
+      - "**"
+      - "!docs/**"
 
 jobs:
-  check-codeowners:
-    timeout-minutes: 30
-    runs-on: ubuntu-24.04
-
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'impact/docs'))
+      || (github.event_name != 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     steps:
-      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5
+      - name: Checkout Website Source
+        uses: actions/checkout@v3
         with:
-          go-version: "1.23.7"
-          cache: false
-          
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-          path: pr
+          repository: python-poetry/website
 
-      - name: Gen CODEOWNERS
+      - name: Checkout Poetry Source
+        uses: actions/checkout@v3
+        with:
+          path: poetry
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Build Assets
+        run: npm ci && npm run prod
+
+      - name: Fetch Documentation
         run: |
-          cd pr
-          GITHUB_TOKEN=${{ secrets.READ_ORG_AND_USER_TOKEN }} ../.tools/githubgen codeowners
-          curl 
+          python -m pip install poetry
+          poetry install --only main
+          poetry run python bin/website build --local ./poetry
+
+      - name: Install Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.83.1'
+
+      - name: Build
+        run: hugo -v --minify
+
+      - name: Deploy
+        uses: amondnet/vercel-action@v25
+        id: vercel-action
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: python-poetry
+          github-comment: true
+          working-directory: public
