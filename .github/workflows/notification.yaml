@@ -1,11 +1,6 @@
 name: "Documentation Preview"
 
 on:
-  pull_request:
-    # allow repository maintainers to modify and test workflow
-    paths-ignore:
-      - "**"
-      - "!.github/workflows/docs.yml"
   pull_request_target:
     # enable runs for this workflow when labeled as documentation only
     # prevent execution when the workflow itself is modified from a fork
@@ -55,7 +50,9 @@ jobs:
         run: |
           python -m pip install poetry
           poetry install --only main
+          printenv
           poetry run python bin/website build --local ./poetry
+          ls -la poetry
 
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v2
