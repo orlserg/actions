@@ -1,36 +1,25 @@
-name: Self-hosted runner (push-caller)
-
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "src/**"
-      - "tests/**"
-      - ".github/**"
-      - "templates/**"
-      - "utils/**"
-
+  pull_request_target:
+    types: [closed]
+name: Add merged PR and linked issues to current milestone of target branch
 jobs:
-  check-for-setup:
-      runs-on: ubuntu-latest
-      name: Check if setup was changed
-      outputs:
-        changed: ${{ steps.was_changed.outputs.changed }}
-      steps:
-        - uses: actions/checkout@v3
-          with: 
-            fetch-depth: "2"
-        
-        - name: Get changed files
-          id: changed-files
-          uses: tj-actions/changed-files@v22.2
-        
-        - name: Was setup changed 
-          id: was_changed
-          run: |
-            for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-              if [ `basename "${file}"` = "setup.py" ]; then
-                echo "changed=1" >> $GITHUB_OUTPUT
-              fi
-            done
+  AddMergedToCurrentMilestone:
+    if: github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+      - id: get-current-milestone
+        run: |
+            echo "current_milestone=v$(head -1 CHANGELOG.md | cut -d " " -f 2)" >> "$GITHUB_OUTPUT"
+      - run: echo ${{ steps.get-current-milestone.outputs.current_milestone }}
+      - id: get-milestone-id
+        run: |
+          echo "milestone_id=$(curl -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/milestones | jq 'map(select(.title == "${{ steps.get-current-milestone.outputs.current_milestone }}"))[0].number')" >> "$GITHUB_OUTPUT"
+      - run: echo ${{ steps.get-milestone-id.outputs.milestone_id }}
+      - uses: breathingdust/current-milestone-action@v4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pull_number: ${{ github.event.pull_request.number }}
+          milestone_number: ${{ steps.get-milestone-id.outputs.milestone_id }}
